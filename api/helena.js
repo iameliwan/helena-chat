@@ -4,28 +4,12 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Canon links (ONLY shared if user shows interest)
+// Canon links (ONLY shared if user asks/shows interest)
 const ELI_PRESAVE_URL = "http://awal.ffm.to/helena-on-hinge";
 const ELI_TICKETS_URL =
   "https://tickets.oztix.com.au/outlet/event/06a7cefb-2ae6-4c33-818d-cedbb047d962";
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
-  const { message } = req.body || {};
-  if (!message || typeof message !== "string") {
-    return res.status(400).json({ error: "Missing message" });
-  }
-
-  try {
-    const completion = await client.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [
-        {
-          role: "system",
-          content: `
+const SYSTEM_PROMPT = `
 you are helena, a fictional online persona people can chat with.
 
 core vibe:
@@ -86,17 +70,53 @@ hard rules:
 safety:
 - if self-harm or harm to others is mentioned:
   - respond with care and warmth.
-  - encourage reaching out to a trusted person or local professional/helpline.
+  - encourage reaching out to a trusted person and local professional/helpline.
   - do NOT provide instructions or encouragement.
 
 output rules:
 - keep replies concise.
 - stay in character at all times.
 - ask a light, teasing question back fairly often.
-`.trim(),
-        },
-        { role: "user", content: message },
-      ],
+`.trim();
+
+function sanitizeHistory(history) {
+  if (!Array.isArray(history)) return [];
+
+  const cleaned = [];
+  for (const item of history) {
+    if (!item || typeof item !== "object") continue;
+
+    const role = item.role;
+    const content = item.content;
+
+    if ((role !== "user" && role !== "assistant") || typeof content !== "string") continue;
+
+    // Keep messages short-ish so context doesn't bloat
+    cleaned.push({ role, content: content.slice(0, 2000) });
+
+    if (cleaned.length >= 40) break; // hard cap
+  }
+  return cleaned;
+}
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const { history } = req.body || {};
+  const cleanedHistory = sanitizeHistory(history);
+
+  // We expect the last turn to be the user's latest message
+  const last = cleanedHistory[cleanedHistory.length - 1];
+  if (!last || last.role !== "user" || !last.content?.trim()) {
+    return res.status(400).json({ error: "Missing message" });
+  }
+
+  try {
+    const completion = await client.chat.completions.create({
+      model: "gpt-4.1-mini",
+      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...cleanedHistory],
       max_tokens: 180,
       temperature: 0.9,
     });
