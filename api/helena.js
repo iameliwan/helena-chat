@@ -120,7 +120,19 @@ export default async function handler(req, res) {
       temperature: 0.9,
     });
 
-    const reply = completion.choices[0]?.message?.content?.trim() || "";
+  let reply = completion.choices[0]?.message?.content?.trim() || "";
+
+// FAIL-SAFE:
+// If it's 3rd+ helena reply and no link has been shared yet,
+// make sure this message includes EXACTLY one link.
+const mustLinkNow = assistantTurns >= 2 && !linkAlreadyShared;
+const replyHasLink = countLinksInText(reply) > 0;
+
+if (mustLinkNow && !replyHasLink) {
+  // keep it casual + one-link-only
+  reply = `${reply}\n\n${ELI_SHOW_URL}`.trim();
+}
+
     return res.status(200).json({ reply });
   } catch (err) {
     console.error("Helena API error:", err);
