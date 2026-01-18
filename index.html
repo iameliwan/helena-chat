@@ -7,16 +7,16 @@
   <style>
     * { box-sizing: border-box; }
 
-body {
-  margin: 0;
-  background: #f2f2f2; 
-  min-height: 100vh;
-  min-height: 100dvh; /* IMPORTANT: dynamic viewport height */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-}
+    body {
+      margin: 0;
+      background: #f2f2f2;
+      min-height: 100vh;
+      min-height: 100dvh; /* IMPORTANT: dynamic viewport height */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
 
     /* OUTER IPHONE 4 BODY */
     .phone {
@@ -57,22 +57,21 @@ body {
       overflow: hidden;
     }
 
-/* INNER BLACK BEZEL */
-.inner-bezel {
-  flex: 1;
-  border-radius: 45px;
-  background: radial-gradient(circle at 20% 0%, #222, #000 70%);
-  position: relative;
-  overflow: hidden;
+    /* INNER BLACK BEZEL */
+    .inner-bezel {
+      flex: 1;
+      border-radius: 45px;
+      background: radial-gradient(circle at 20% 0%, #222, #000 70%);
+      position: relative;
+      overflow: hidden;
 
-  /* Top space for camera/speaker, but no bottom padding now */
-  padding: 90px 10px 0;
+      /* Top space for camera/speaker, but no bottom padding now */
+      padding: 90px 10px 0;
 
-  /* IMPORTANT: stack screen + bottom plate vertically */
-  display: flex;
-  flex-direction: column;
-}
-
+      /* IMPORTANT: stack screen + bottom plate vertically */
+      display: flex;
+      flex-direction: column;
+    }
 
     /* GLASS SHEEN */
     .glass-sheen {
@@ -92,25 +91,24 @@ body {
       opacity: 0.9;
     }
 
-/* SCREEN CONTAINER */
-.screen {
-  position: relative;
-  z-index: 2;
-  border-radius: 6px;
-  overflow: hidden;
-  background: #e5ebf0;
+    /* SCREEN CONTAINER */
+    .screen {
+      position: relative;
+      z-index: 2;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #e5ebf0;
 
-  /* IMPORTANT: take remaining height ABOVE the bottom plate */
-  flex: 1;
-  min-height: 0;
+      /* IMPORTANT: take remaining height ABOVE the bottom plate */
+      flex: 1;
+      min-height: 0;
 
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
-  display: flex;
-  flex-direction: column;
-}
-
+      box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
 
     /* TOP CAMERA + SPEAKER */
     .camera-dot {
@@ -141,20 +139,19 @@ body {
       z-index: 6;
     }
 
-/* BOTTOM BLACK PLATE (iPhone 4 style) */
-.bottom-plate {
-  height: 98px;
-  background: linear-gradient(#0f0f0f, #000);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    /* BOTTOM BLACK PLATE (iPhone 4 style) */
+    .bottom-plate {
+      height: 98px;
+      background: linear-gradient(#0f0f0f, #000);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-  /* no overlay */
-  position: relative;
-  z-index: 4;
-}
-
+      /* no overlay */
+      position: relative;
+      z-index: 4;
+    }
 
     /* HOME BUTTON (recessed, iPhone 4 style) */
     .home-button {
@@ -234,15 +231,15 @@ body {
       background: #fff;
     }
 
-.battery-fill {
-  position: absolute;
-  left: 1px;
-  top: 1px;
-  bottom: 1px;
-  width: 17%;
-  background: #f4c20d;
-  border-radius: 1px;
-}
+    .battery-fill {
+      position: absolute;
+      left: 1px;
+      top: 1px;
+      bottom: 1px;
+      width: 17%;
+      background: #f4c20d;
+      border-radius: 1px;
+    }
 
     /* MESSAGES HEADER */
     .app-header {
@@ -334,6 +331,49 @@ body {
       clear: both;
     }
 
+    /* Clickable links in messages */
+    .msg a {
+      color: #0b93ff;
+      text-decoration: none;
+      word-break: break-word;
+    }
+    .msg.user a { color: #d7ecff; }
+    .msg a:active { opacity: 0.6; }
+
+    /* Typing indicator (3 dots) */
+    .typing {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      margin: 0 0 8px 6px;
+      background: #e5e5ea;
+      border-radius: 14px;
+      float: left;
+      clear: both;
+    }
+
+    .typing span {
+      width: 6px;
+      height: 6px;
+      background: #0b93ff;
+      border-radius: 50%;
+      animation: typingBounce 1.1s infinite ease-in-out;
+      opacity: 0.35;
+    }
+
+    .typing span:nth-child(2) { animation-delay: 0.15s; }
+    .typing span:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes typingBounce {
+      0%   { transform: translateY(0); opacity: 0.25; }
+      20%  { transform: translateY(-2px); opacity: 1; }
+      40%  { transform: translateY(0); opacity: 0.35; }
+      100% { transform: translateY(0); opacity: 0.35; }
+    }
+
+    .hidden { display: none; }
+
     /* INPUT BAR */
     .input-bar {
       padding: 4px 6px 6px;
@@ -390,21 +430,20 @@ body {
       cursor: default;
     }
 
-@media (max-height: 760px) {
-  .phone { transform: scale(0.9); }
-}
+    @media (max-height: 760px) {
+      .phone { transform: scale(0.9); }
+    }
 
-@media (max-height: 680px) {
-  .phone { transform: scale(0.8); }
-}
+    @media (max-height: 680px) {
+      .phone { transform: scale(0.8); }
+    }
 
-@media (max-width: 600px) {
-  .phone {
-    margin-top: env(safe-area-inset-top);
-    margin-bottom: env(safe-area-inset-bottom);
-  }
-}
-
+    @media (max-width: 600px) {
+      .phone {
+        margin-top: env(safe-area-inset-top);
+        margin-bottom: env(safe-area-inset-bottom);
+      }
+    }
   </style>
 </head>
 <body>
@@ -435,7 +474,11 @@ body {
           <div class="app-header">helena (from hinge)</div>
 
           <div class="chat-wrapper">
-            <div id="chat">
+            <div id="chat"></div>
+
+            <!-- typing dots bubble -->
+            <div id="typing" class="typing hidden" aria-hidden="true">
+              <span></span><span></span><span></span>
             </div>
 
             <form id="form" class="input-bar">
@@ -463,25 +506,36 @@ body {
     const form = document.getElementById('form');
     const input = document.getElementById('input');
     const button = form.querySelector('button');
+    const typing = document.getElementById('typing');
 
-function linkify(text) {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  return text.replace(urlRegex, (url) => {
-    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-  });
-}
+    function linkify(text) {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      return text.replace(urlRegex, (url) => {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+      });
+    }
 
-function addMessage(text, who) {
-  const div = document.createElement('div');
-  div.className = 'msg ' + (who || 'helena');
+    function addMessage(text, who) {
+      const div = document.createElement('div');
+      div.className = 'msg ' + (who || 'helena');
 
-  // render text + clickable links
-  div.innerHTML = linkify(text);
+      // render text + clickable links
+      div.innerHTML = linkify(text);
 
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
 
+    function showTyping() {
+      if (!typing) return;
+      typing.classList.remove('hidden');
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function hideTyping() {
+      if (!typing) return;
+      typing.classList.add('hidden');
+    }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -494,6 +548,8 @@ function addMessage(text, who) {
       button.disabled = true;
       button.textContent = '…';
 
+      showTyping();
+
       try {
         const res = await fetch('/api/helena', {
           method: 'POST',
@@ -503,14 +559,18 @@ function addMessage(text, who) {
 
         const data = await res.json();
 
+        hideTyping();
+
         if (data.error) {
           addMessage("something glitched on my side. try again in a bit 🫠", 'helena');
         } else {
           addMessage(data.reply || "i don't know what to say right now, but i’m here.", 'helena');
         }
       } catch (err) {
+        hideTyping();
         addMessage("network vibes are off. try again in a sec ✨", 'helena');
       } finally {
+        hideTyping();
         button.disabled = false;
         button.textContent = 'Send';
       }
