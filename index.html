@@ -508,6 +508,8 @@
     const button = form.querySelector('button');
     const typing = document.getElementById('typing');
 
+    let history = [];
+
     function linkify(text) {
       const urlRegex = /(https?:\/\/[^\s]+)/g;
       return text.replace(urlRegex, (url) => {
@@ -515,16 +517,24 @@
       });
     }
 
-    function addMessage(text, who) {
-      const div = document.createElement('div');
-      div.className = 'msg ' + (who || 'helena');
+function addMessage(text, who) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + (who || 'helena');
 
-      // render text + clickable links
-      div.innerHTML = linkify(text);
+  // render text + clickable links
+  div.innerHTML = linkify(text);
 
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+
+  // store conversation for the API
+  if (who === 'user') history.push({ role: 'user', content: text });
+  if (who === 'helena') history.push({ role: 'assistant', content: text });
+
+  // keep it from growing forever (last ~24 messages)
+  if (history.length > 24) history = history.slice(history.length - 24);
+}
+
 
     function showTyping() {
       if (!typing) return;
