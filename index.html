@@ -52,23 +52,20 @@
       align-items: stretch;
       justify-content: center;
 
-      /* Clip inner layers so nothing shows in rounded corners */
+      /* critical: clip rounded corners */
       overflow: hidden;
     }
 
     /* INNER BLACK BEZEL */
     .inner-bezel {
       flex: 1;
-
-      /* Match chrome rounding minus its padding (50px - 5px) */
-      border-radius: 45px;
-
+      border-radius: 45px; /* 50 - 5 padding = 45 */
       background: radial-gradient(circle at 20% 0%, #222, #000 70%);
-      padding: 90px 10px 90px;
       position: relative;
-
-      /* Keep clipping inside the bezel */
       overflow: hidden;
+
+      /* Top space (camera/speaker) + bottom space (home button plate) */
+      padding: 90px 10px 90px;
 
       display: flex;
       align-items: stretch;
@@ -89,18 +86,15 @@
       );
       transform: rotate(-8deg);
       pointer-events: none;
-      z-index: 3;
+      z-index: 5;
       opacity: 0.9;
     }
 
     /* SCREEN CONTAINER */
     .screen {
       position: relative;
-      z-index: 1;
-
-      /* Slight rounding like iPhone 4 screen edge */
+      z-index: 2;
       border-radius: 6px;
-
       overflow: hidden;
       background: #e5ebf0;
       height: 100%;
@@ -123,7 +117,7 @@
       border-radius: 50%;
       background: radial-gradient(circle at 30% 30%, #446df4, #050608);
       box-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
-      z-index: 4;
+      z-index: 6;
     }
 
     .earpiece-slot {
@@ -138,34 +132,44 @@
       box-shadow:
         inset 0 1px 2px rgba(255, 255, 255, 0.15),
         0 0 0 1px rgba(0, 0, 0, 0.8);
-      z-index: 4;
+      z-index: 6;
     }
 
-    /* HOME BUTTON (now inside bezel, so it aligns correctly) */
-    .home-button {
+    /* BOTTOM BLACK PLATE (iPhone 4 style) */
+    .bottom-plate {
       position: absolute;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #505050, #050505);
-      box-shadow:
-        0 0 0 2px #000,
-        0 4px 10px rgba(0, 0, 0, 0.9),
-        inset 0 0 0 2px rgba(255, 255, 255, 0.07);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 98px;
+      background: linear-gradient(#0f0f0f, #000);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 4;
     }
 
+    /* HOME BUTTON (recessed, iPhone 4 style) */
+    .home-button {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #3a3a3a, #050505);
+      box-shadow:
+        inset 0 3px 7px rgba(0, 0, 0, 0.9),
+        inset 0 -2px 4px rgba(255, 255, 255, 0.06),
+        0 1px 0 rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .home-button-inner {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 6px;
-      border: 2px solid rgba(255, 255, 255, 0.26);
+      border: 2px solid rgba(255, 255, 255, 0.22);
     }
 
     /* STATUS BAR */
@@ -272,8 +276,7 @@
       background: #e5ebf0;
       display: flex;
       flex-direction: column;
-      border-radius: 0;
-      min-height: 0; /* allows chat scroll to work in flex layouts */
+      min-height: 0;
     }
 
     #chat {
@@ -297,7 +300,6 @@
       clear: both;
     }
 
-    /* YOU – blue bubble on the right */
     .msg.user {
       background: #1d7cf2;
       color: #fff;
@@ -306,7 +308,6 @@
       border-bottom-right-radius: 2px;
     }
 
-    /* HELENA – grey bubble on the left */
     .msg.helena {
       background: #e5e5ea;
       color: #000;
@@ -436,8 +437,11 @@
           </div>
         </div>
 
-        <div class="home-button">
-          <div class="home-button-inner"></div>
+        <!-- bottom plate + home button -->
+        <div class="bottom-plate">
+          <div class="home-button">
+            <div class="home-button-inner"></div>
+          </div>
         </div>
       </div>
     </div>
