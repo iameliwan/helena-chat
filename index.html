@@ -7,14 +7,15 @@
   <style>
     * { box-sizing: border-box; }
 
-body {
-  margin: 0;
-  background: #000; /* or whatever you chose */
-  height: 100svh; /* IMPORTANT: stable viewport height on mobile */
-  display: grid;
-  place-items: center;
-  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-}
+    body {
+      margin: 0;
+      background: #f2f2f2;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
 
     /* OUTER IPHONE 4 BODY */
     .phone {
@@ -494,22 +495,6 @@ body {
         button.textContent = 'Send';
       }
     });
-  </script>
-  
-  <script>
-    // Keep phone centered when iOS keyboard opens
-    if (window.visualViewport) {
-      const phone = document.querySelector('.phone');
-
-      function adjustForKeyboard() {
-        const offset =
-          (window.innerHeight - window.visualViewport.height) / 2;
-        phone.style.transform = `translateY(${offset}px)`;
-      }
-
-      window.visualViewport.addEventListener('resize', adjustForKeyboard);
-      window.visualViewport.addEventListener('scroll', adjustForKeyboard);
-    }
   </script>
 </body>
 </html>
