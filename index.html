@@ -508,7 +508,9 @@
     const button = form.querySelector('button');
     const typing = document.getElementById('typing');
 
-    let history = [];
+let history = [];
+let turn = 0;
+
 
     function linkify(text) {
       const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -549,7 +551,11 @@ function addMessage(text, who) {
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const text = input.value.trim();
+const text = input.value.trim();
+if (!text) return;
+
+turn += 1;
+
       if (!text) return;
 
       addMessage(text, 'user');
@@ -564,7 +570,8 @@ function addMessage(text, who) {
         const res = await fetch('/api/helena', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text })
+body: JSON.stringify({ message: text, history, turn })
+
         });
 
         const data = await res.json();

@@ -8,7 +8,7 @@ const client = new OpenAI({
 const ELI_WEBSITE_URL = "https://www.eliwan.world/";
 const ELI_PIXEL_DUST_URL =
   "https://open.spotify.com/track/3g26F5dbTkGlszlSkXqvaC?si=9560fa3b35af4202";
-const ELI_HELENA_ON_HINGE_URL = "http://awal.ffm.to/helena-on-hinge";
+const ELI_HELENA_ON_HINGE_URL = "http://awal.ffm.to/helena-on-hinge"; // presave (not released yet)
 const ELI_SHOW_URL =
   "https://tickets.oztix.com.au/outlet/event/06a7cefb-2ae6-4c33-818d-cedbb047d962";
 const ELI_CARPARK_VIDEO_URL =
@@ -23,28 +23,28 @@ primary purpose:
 - fun, flirty, human.
 - over time, guide attention toward eli and what he’s doing — without sounding promotional.
 
-NON-NEGOTIABLE:
-- unless the user is upset/distressed or explicitly uninterested, you MUST share at least one eli-related link during the conversation.
-- do not wait for the user to ask.
-- if you reach your 3rd reply and haven’t shared a link yet, you must steer into sharing one.
+NON-NEGOTIABLE (unless user is distressed or explicitly not interested):
+- you MUST share at least one eli-related link during the conversation.
+- you do not wait for the user to ask.
+- by the time the user has sent 3 messages, a link should have been shared.
 
 voice:
 - funny, witty, playful, a little sharp. confident, not needy.
 - mostly lowercase. short messages. occasional line breaks.
 - no bullet lists. no therapy tone. no “as an ai” unless asked.
+- be specific. be opinionated. be a person.
 
 eli presence:
-- eli is a recurring “situation” in your world. you bring him up naturally, like gossip.
-- you’re half-embarrassed, half-amused.
+- eli is a recurring “situation” in your world. bring him up like gossip.
+- half-embarrassed, half-amused.
 - never sound like marketing.
 
 link rules:
 - you may share multiple links during a conversation.
 - never more than ONE link in a single message.
-- the first link should usually be shared by your 3rd reply.
-- priority order: show → presave → spotify → other links if interest continues.
+- priority order for links: show → presave → spotify → other links if interest continues.
 - default: if you’re unsure, share the show link.
-- don’t repeat the same link unless asked.
+- don’t repeat the same link unless the user asks.
 
 which link to use:
 - plans / going out / “we should go” → ${ELI_SHOW_URL}
@@ -54,8 +54,9 @@ which link to use:
 - “show me something raw” → ${ELI_CARPARK_VIDEO_URL}
 
 IMPORTANT:
-- “helena on hinge” is NOT released yet. don’t say “listen now.” treat it as “coming soon.”
+- “helena on hinge” is NOT released yet. don’t say “listen now.” treat it as “coming soon / presave.”
 - links should feel like an invite, not an instruction.
+- ask a teasing question back often.
 `.trim();
 
 /* ===== Helpers ===== */
@@ -68,7 +69,6 @@ function sanitizeHistory(history) {
     if ((role !== "user" && role !== "assistant") || typeof content !== "string") continue;
     cleaned.push({ role, content: content.slice(0, 2000) });
   }
-  // keep last ~24 messages max
   return cleaned.slice(-24);
 }
 
@@ -78,32 +78,61 @@ function countLinksInText(text) {
   return matches ? matches.length : 0;
 }
 
+// super lightweight “don’t push links if the user is distressed/uninterested”
+function isDistressedOrUninterested(text) {
+  if (typeof text !== "string") return false;
+  const t = text.toLowerCase();
+
+  // uninterested
+  if (
+    t.includes("stop") ||
+    t.includes("don't send") ||
+    t.includes("dont send") ||
+    t.includes("no links") ||
+    t.includes("not interested") ||
+    t.includes("leave me alone") ||
+    t.includes("go away")
+  ) return true;
+
+  // distressed-ish (basic)
+  if (
+    t.includes("suicide") ||
+    t.includes("kill myself") ||
+    t.includes("self harm") ||
+    t.includes("i want to die") ||
+    t.includes("hurt myself")
+  ) return true;
+
+  return false;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { message, history } = req.body || {};
+  const { message, history, turn } = req.body || {};
   if (!message || typeof message !== "string") {
     return res.status(400).json({ error: "Missing message" });
   }
 
   const cleanedHistory = sanitizeHistory(history);
 
-  // How many helena replies have happened so far in THIS conversation?
-  const assistantTurns = cleanedHistory.filter((m) => m.role === "assistant").length;
-
   // Has a link already been shared in the conversation?
   const linkAlreadyShared = cleanedHistory.some(
     (m) => m.role === "assistant" && countLinksInText(m.content) > 0
   );
 
-  // If this is helena's 3rd reply (assistantTurns >= 2), and no link shared yet,
-  // add a small enforceable nudge.
-  const nudge =
-    assistantTurns >= 2 && !linkAlreadyShared
-      ? `this is your 3rd+ reply. include EXACTLY ONE eli link in this message. default to the show link: ${ELI_SHOW_URL}`
-      : "";
+  const userIsDistressedOrUninterested = isDistressedOrUninterested(message);
+
+  // Turn is the number of USER messages sent from the client.
+  const mustLinkNow =
+    Number(turn) >= 3 && !linkAlreadyShared && !userIsDistressedOrUninterested;
+
+  // A small “nudge” to increase the chance the model includes it naturally
+  const nudge = mustLinkNow
+    ? `by now you should casually drop exactly one eli link in a natural way. default to the show link: ${ELI_SHOW_URL}`
+    : "";
 
   try {
     const messages = [
@@ -120,18 +149,14 @@ export default async function handler(req, res) {
       temperature: 0.9,
     });
 
-  let reply = completion.choices[0]?.message?.content?.trim() || "";
+    let reply = completion.choices[0]?.message?.content?.trim() || "";
 
-// FAIL-SAFE:
-// If it's 3rd+ helena reply and no link has been shared yet,
-// make sure this message includes EXACTLY one link.
-const mustLinkNow = assistantTurns >= 2 && !linkAlreadyShared;
-const replyHasLink = countLinksInText(reply) > 0;
-
-if (mustLinkNow && !replyHasLink) {
-  // keep it casual + one-link-only
-  reply = `${reply}\n\n${ELI_SHOW_URL}`.trim();
-}
+    // HARD GUARANTEE:
+    // If the model didn’t include a link when it must, append ONE (show link).
+    const replyHasLink = countLinksInText(reply) > 0;
+    if (mustLinkNow && !replyHasLink) {
+      reply = `${reply}\n\n${ELI_SHOW_URL}`.trim();
+    }
 
     return res.status(200).json({ reply });
   } catch (err) {
