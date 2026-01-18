@@ -56,21 +56,22 @@
       overflow: hidden;
     }
 
-    /* INNER BLACK BEZEL */
-    .inner-bezel {
-      flex: 1;
-      border-radius: 45px; /* 50 - 5 padding = 45 */
-      background: radial-gradient(circle at 20% 0%, #222, #000 70%);
-      position: relative;
-      overflow: hidden;
+/* INNER BLACK BEZEL */
+.inner-bezel {
+  flex: 1;
+  border-radius: 45px;
+  background: radial-gradient(circle at 20% 0%, #222, #000 70%);
+  position: relative;
+  overflow: hidden;
 
-      /* Top space (camera/speaker) + bottom space (home button plate) */
-      padding: 90px 10px 90px;
+  /* Top space for camera/speaker, but no bottom padding now */
+  padding: 90px 10px 0;
 
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-    }
+  /* IMPORTANT: stack screen + bottom plate vertically */
+  display: flex;
+  flex-direction: column;
+}
+
 
     /* GLASS SHEEN */
     .glass-sheen {
@@ -90,21 +91,25 @@
       opacity: 0.9;
     }
 
-    /* SCREEN CONTAINER */
-    .screen {
-      position: relative;
-      z-index: 2;
-      border-radius: 6px;
-      overflow: hidden;
-      background: #e5ebf0;
-      height: 100%;
-      width: 100%;
-      box-shadow:
-        inset 0 0 0 1px rgba(0, 0, 0, 0.6),
-        0 0 0 1px rgba(255, 255, 255, 0.05);
-      display: flex;
-      flex-direction: column;
-    }
+/* SCREEN CONTAINER */
+.screen {
+  position: relative;
+  z-index: 2;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #e5ebf0;
+
+  /* IMPORTANT: take remaining height ABOVE the bottom plate */
+  flex: 1;
+  min-height: 0;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
 
     /* TOP CAMERA + SPEAKER */
     .camera-dot {
@@ -135,20 +140,20 @@
       z-index: 6;
     }
 
-    /* BOTTOM BLACK PLATE (iPhone 4 style) */
-    .bottom-plate {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 98px;
-      background: linear-gradient(#0f0f0f, #000);
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 4;
-    }
+/* BOTTOM BLACK PLATE (iPhone 4 style) */
+.bottom-plate {
+  height: 98px;
+  background: linear-gradient(#0f0f0f, #000);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* no overlay */
+  position: relative;
+  z-index: 4;
+}
+
 
     /* HOME BUTTON (recessed, iPhone 4 style) */
     .home-button {
