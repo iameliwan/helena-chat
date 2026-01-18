@@ -7,15 +7,16 @@
   <style>
     * { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      background: #f2f2f2;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    }
+body {
+  margin: 0;
+  background: #f2f2f2; 
+  min-height: 100vh;
+  min-height: 100dvh; /* IMPORTANT: dynamic viewport height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
 
     /* OUTER IPHONE 4 BODY */
     .phone {
@@ -389,13 +390,21 @@
       cursor: default;
     }
 
-    @media (max-height: 760px) {
-      .phone { transform: scale(0.9); }
-    }
+@media (max-height: 760px) {
+  .phone { transform: scale(0.9); }
+}
 
-    @media (max-height: 680px) {
-      .phone { transform: scale(0.8); }
-    }
+@media (max-height: 680px) {
+  .phone { transform: scale(0.8); }
+}
+
+@media (max-width: 600px) {
+  .phone {
+    margin-top: env(safe-area-inset-top);
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+}
+
   </style>
 </head>
 <body>
