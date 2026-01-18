@@ -5,9 +5,7 @@
   <title>Chat with Helena</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -53,16 +51,25 @@
       display: flex;
       align-items: stretch;
       justify-content: center;
+
+      /* Clip inner layers so nothing shows in rounded corners */
+      overflow: hidden;
     }
 
     /* INNER BLACK BEZEL */
     .inner-bezel {
       flex: 1;
-      border-radius: 0px;
+
+      /* Match chrome rounding minus its padding (50px - 5px) */
+      border-radius: 45px;
+
       background: radial-gradient(circle at 20% 0%, #222, #000 70%);
       padding: 90px 10px 90px;
       position: relative;
+
+      /* Keep clipping inside the bezel */
       overflow: hidden;
+
       display: flex;
       align-items: stretch;
       justify-content: center;
@@ -82,13 +89,18 @@
       );
       transform: rotate(-8deg);
       pointer-events: none;
+      z-index: 3;
+      opacity: 0.9;
     }
 
     /* SCREEN CONTAINER */
     .screen {
       position: relative;
       z-index: 1;
-      border-radius: 0px;
+
+      /* Slight rounding like iPhone 4 screen edge */
+      border-radius: 6px;
+
       overflow: hidden;
       background: #e5ebf0;
       height: 100%;
@@ -111,7 +123,7 @@
       border-radius: 50%;
       background: radial-gradient(circle at 30% 30%, #446df4, #050608);
       box-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
-      z-index: 2;
+      z-index: 4;
     }
 
     .earpiece-slot {
@@ -126,17 +138,17 @@
       box-shadow:
         inset 0 1px 2px rgba(255, 255, 255, 0.15),
         0 0 0 1px rgba(0, 0, 0, 0.8);
-      z-index: 2;
+      z-index: 4;
     }
 
-    /* HOME BUTTON */
+    /* HOME BUTTON (now inside bezel, so it aligns correctly) */
     .home-button {
       position: absolute;
-      bottom: 40px;
+      bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
-      width: 70px;
-      height: 70px;
+      width: 72px;
+      height: 72px;
       border-radius: 50%;
       background: radial-gradient(circle at 30% 30%, #505050, #050505);
       box-shadow:
@@ -146,7 +158,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 3;
+      z-index: 4;
     }
 
     .home-button-inner {
@@ -260,7 +272,8 @@
       background: #e5ebf0;
       display: flex;
       flex-direction: column;
-      border-radius: 0 0 18px 18px;
+      border-radius: 0;
+      min-height: 0; /* allows chat scroll to work in flex layouts */
     }
 
     #chat {
@@ -268,6 +281,7 @@
       overflow-y: auto;
       padding: 10px 6px 4px;
       font-size: 13px;
+      min-height: 0;
     }
 
     .msg {
@@ -309,6 +323,8 @@
       color: #555;
       background: transparent;
       display: block;
+      float: none;
+      clear: both;
     }
 
     /* INPUT BAR */
@@ -368,15 +384,11 @@
     }
 
     @media (max-height: 760px) {
-      .phone {
-        transform: scale(0.9);
-      }
+      .phone { transform: scale(0.9); }
     }
 
     @media (max-height: 680px) {
-      .phone {
-        transform: scale(0.8);
-      }
+      .phone { transform: scale(0.8); }
     }
   </style>
 </head>
@@ -405,9 +417,7 @@
             </div>
           </div>
 
-          <div class="app-header">
-            helena
-          </div>
+          <div class="app-header">helena</div>
 
           <div class="chat-wrapper">
             <div id="chat">
@@ -425,11 +435,11 @@
             </form>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="home-button">
-      <div class="home-button-inner"></div>
+        <div class="home-button">
+          <div class="home-button-inner"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -464,7 +474,9 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: text })
         });
+
         const data = await res.json();
+
         if (data.error) {
           addMessage("something glitched on my side. try again in a bit 🫠", 'helena');
         } else {
