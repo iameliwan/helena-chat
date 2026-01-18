@@ -11,63 +11,152 @@
 
     body {
       margin: 0;
-      background: #111;
+      background: #de0505;
       height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-      color: #000;
     }
 
+    /* OUTER IPHONE 4 BODY */
     .phone {
-      width: 330px;
-      height: 640px;
-      border-radius: 40px;
-      background: #000;
-      padding: 14px 10px 18px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-      border: 2px solid #444;
+      width: 380px;
+      height: 740px;
+      border-radius: 56px;
+      background: radial-gradient(circle at 20% 0%, #3b3b3b, #050505 65%);
+      box-shadow:
+        0 28px 70px rgba(0, 0, 0, 0.95),
+        0 0 0 2px rgba(0, 0, 0, 0.8);
+      padding: 6px;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* Top speaker + home button to feel like iPhone 4 */
-    .phone::before {
-      content: "";
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 6px;
-      border-radius: 3px;
-      background: #222;
-    }
-
-    .phone::after {
-      content: "";
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      border: 2px solid #444;
-      box-shadow: inset 0 0 0 2px #000;
-    }
-
-    .screen {
-      background: #f5f5f5;
-      border-radius: 26px;
+    /* SILVER EDGE / CHROME RIM */
+    .chrome-rim {
+      width: 100%;
       height: 100%;
-      padding: 6px 6px 8px;
+      border-radius: 50px;
+      background: linear-gradient(
+        145deg,
+        #f5f5f5 0%,
+        #d1d1d1 18%,
+        #a0a0a0 40%,
+        #dcdcdc 70%,
+        #f7f7f7 100%
+      );
+      padding: 5px;
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    /* INNER BLACK BEZEL */
+    .inner-bezel {
+      flex: 1;
+      border-radius: 0px;
+      background: radial-gradient(circle at 20% 0%, #222, #000 70%);
+      padding: 90px 10px 90px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    /* GLASS SHEEN */
+    .glass-sheen {
+      position: absolute;
+      top: -40%;
+      left: -15%;
+      width: 150%;
+      height: 60%;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.28),
+        rgba(255, 255, 255, 0)
+      );
+      transform: rotate(-8deg);
+      pointer-events: none;
+    }
+
+    /* SCREEN CONTAINER */
+    .screen {
+      position: relative;
+      z-index: 1;
+      border-radius: 0px;
+      overflow: hidden;
+      background: #e5ebf0;
+      height: 100%;
+      width: 100%;
+      box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-      position: relative;
     }
 
+    /* TOP CAMERA + SPEAKER */
+    .camera-dot {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-85px);
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #446df4, #050608);
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
+      z-index: 2;
+    }
+
+    .earpiece-slot {
+      position: absolute;
+      top: 55px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 74px;
+      height: 10px;
+      border-radius: 6px;
+      background: #101010;
+      box-shadow:
+        inset 0 1px 2px rgba(255, 255, 255, 0.15),
+        0 0 0 1px rgba(0, 0, 0, 0.8);
+      z-index: 2;
+    }
+
+    /* HOME BUTTON */
+    .home-button {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #505050, #050505);
+      box-shadow:
+        0 0 0 2px #000,
+        0 4px 10px rgba(0, 0, 0, 0.9),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+    }
+
+    .home-button-inner {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 2px solid rgba(255, 255, 255, 0.26);
+    }
+
+    /* STATUS BAR */
     .status-bar {
       display: flex;
       justify-content: space-between;
@@ -75,16 +164,11 @@
       font-size: 10px;
       color: #fff;
       padding: 0 6px;
-      height: 14px;
-      margin-bottom: 4px;
+      height: 16px;
+      background: linear-gradient(#3b3b3b, #111);
     }
 
-    .status-left {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-    }
-
+    .status-left,
     .status-right {
       display: flex;
       gap: 4px;
@@ -103,8 +187,8 @@
       background: #fff;
     }
 
-    .status-bars span:nth-child(1) { height: 4px; opacity: .5; }
-    .status-bars span:nth-child(2) { height: 6px; opacity: .7; }
+    .status-bars span:nth-child(1) { height: 4px; opacity: 0.45; }
+    .status-bars span:nth-child(2) { height: 6px; opacity: 0.7; }
     .status-bars span:nth-child(3) { height: 8px; }
     .status-bars span:nth-child(4) { height: 9px; }
     .status-bars span:nth-child(5) { height: 9px; }
@@ -138,17 +222,19 @@
       border-radius: 1px;
     }
 
+    /* MESSAGES HEADER */
     .app-header {
-      height: 32px;
+      height: 34px;
       background: linear-gradient(#6d84b4, #3b5998);
-      border-radius: 14px 14px 0 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.45);
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       position: relative;
+      text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7);
     }
 
     .app-header::before {
@@ -157,7 +243,7 @@
       left: 10px;
       font-size: 13px;
       font-weight: 500;
-      opacity: 0.9;
+      opacity: 0.95;
     }
 
     .app-header::after {
@@ -165,23 +251,22 @@
       position: absolute;
       right: 10px;
       font-size: 13px;
-      opacity: 0.9;
+      opacity: 0.95;
     }
 
+    /* CHAT AREA */
     .chat-wrapper {
       flex: 1;
       background: #e5ebf0;
-      border-radius: 0 0 16px 16px;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 0 0 18px 18px;
     }
 
     #chat {
       flex: 1;
       overflow-y: auto;
-      padding: 8px 6px 4px;
+      padding: 10px 6px 4px;
       font-size: 13px;
     }
 
@@ -198,33 +283,39 @@
       clear: both;
     }
 
+    /* YOU – blue bubble on the right */
     .msg.user {
-      background: #0b93ff;
+      background: #1d7cf2;
       color: #fff;
-      margin-left: auto;
+      float: right;
+      margin-right: 4px;
       border-bottom-right-radius: 2px;
     }
 
+    /* HELENA – grey bubble on the left */
     .msg.helena {
       background: #e5e5ea;
       color: #000;
-      margin-right: auto;
+      float: left;
+      margin-left: 4px;
       border-bottom-left-radius: 2px;
     }
 
     .msg.system {
       max-width: 90%;
-      margin: 4px auto 8px auto;
+      margin: 40px auto 16px auto;
       text-align: center;
       font-size: 11px;
       color: #555;
       background: transparent;
+      display: block;
     }
 
+    /* INPUT BAR */
     .input-bar {
       padding: 4px 6px 6px;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-      background: #d7dde4;
+      border-top: 1px solid rgba(0, 0, 0, 0.15);
+      background: linear-gradient(#d7dde4, #c7cfd6);
       display: flex;
       align-items: center;
       gap: 4px;
@@ -234,7 +325,7 @@
       flex: 1;
       background: #fff;
       border-radius: 16px;
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.18);
       display: flex;
       align-items: center;
       padding: 4px 8px;
@@ -253,13 +344,12 @@
       color: #999;
     }
 
-    .camera-dot {
-      width: 10px;
-      height: 10px;
+    .imessage-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background: #8eb4ff;
+      background: #4a8cff;
       margin-right: 6px;
-      opacity: 0.8;
     }
 
     button {
@@ -277,51 +367,69 @@
       cursor: default;
     }
 
-    @media (max-height: 700px) {
+    @media (max-height: 760px) {
       .phone {
         transform: scale(0.9);
+      }
+    }
+
+    @media (max-height: 680px) {
+      .phone {
+        transform: scale(0.8);
       }
     }
   </style>
 </head>
 <body>
   <div class="phone">
-    <div class="screen">
-      <div class="status-bar">
-        <div class="status-left">
-          <div class="status-bars">
-            <span></span><span></span><span></span><span></span><span></span>
+    <div class="chrome-rim">
+      <div class="inner-bezel">
+        <div class="glass-sheen"></div>
+        <div class="camera-dot"></div>
+        <div class="earpiece-slot"></div>
+
+        <div class="screen">
+          <div class="status-bar">
+            <div class="status-left">
+              <div class="status-bars">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <span>Optus 3G</span>
+            </div>
+            <div>9:41 AM</div>
+            <div class="status-right">
+              <span>100%</span>
+              <div class="battery">
+                <div class="battery-fill"></div>
+              </div>
+            </div>
           </div>
-          <span>Optus 3G</span>
-        </div>
-        <div>9:41 AM</div>
-        <div class="status-right">
-          <span>100%</span>
-          <div class="battery">
-            <div class="battery-fill"></div>
+
+          <div class="app-header">
+            helena
+          </div>
+
+          <div class="chat-wrapper">
+            <div id="chat">
+              <div class="msg system">
+                helena is a fictional character, she’s not a human and can’t replace real-life help. 💜
+              </div>
+            </div>
+
+            <form id="form" class="input-bar">
+              <div class="input-bubble">
+                <div class="imessage-dot"></div>
+                <input id="input" autocomplete="off" placeholder="iMessage" />
+              </div>
+              <button type="submit">Send</button>
+            </form>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="app-header">
-        helena
-      </div>
-
-      <div class="chat-wrapper">
-        <div id="chat">
-          <div class="msg system">
-            helena is a fictional character. she might feel real, but she’s not a human and can’t replace real-life help. 💜
-          </div>
-        </div>
-
-        <form id="form" class="input-bar">
-          <div class="input-bubble">
-            <div class="camera-dot"></div>
-            <input id="input" autocomplete="off" placeholder="iMessage" />
-          </div>
-          <button type="submit">Send</button>
-        </form>
-      </div>
+    <div class="home-button">
+      <div class="home-button-inner"></div>
     </div>
   </div>
 
