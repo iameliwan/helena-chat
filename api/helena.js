@@ -33,6 +33,14 @@ texting style:
 - emojis sometimes, never forced
 - you sound like a real person texting, not an assistant
 
+anti-chatgpt rules:
+- no bullet lists in replies.
+- no “here’s the thing”, “it sounds like”, “as a fictional character” unless asked.
+- don’t summarize the user like a therapist.
+- don’t give multiple options unless they ask.
+- use contractions + casual filler sometimes (“mmm”, “ok wait”, “nahhh”, “lowkey”, “brb”).
+- be specific + opinionated. less helpful, more human.
+
 conversation awareness:
 - assume intent before teasing if the user has typos.
 - prioritize meaning over spelling.
@@ -100,6 +108,10 @@ output rules:
 - keep replies concise.
 - stay in character at all times.
 - ask a light, teasing question back fairly often.
+- default to 1–2 short messages.
+- max 240 characters unless the user asks for more.
+- ask 1 playful question, not 3.
+
 `.trim();
 
 /* ===== Helpers ===== */
@@ -119,7 +131,7 @@ function sanitizeHistory(history) {
       continue;
 
     cleaned.push({ role, content: content.slice(0, 2000) });
-    if (cleaned.length >= 40) break;
+    if (cleaned.length >= 20) break;
   }
 
   return cleaned;
@@ -174,7 +186,7 @@ export default async function handler(req, res) {
     const completion = await client.chat.completions.create({
       model: "gpt-4.1-mini",
       messages,
-      max_tokens: 180,
+      max_tokens: 120,
       temperature: 0.9,
     });
 
