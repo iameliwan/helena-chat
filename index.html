@@ -440,6 +440,17 @@ padding-top: 0;
       cursor: default;
     }
 
+/* blinking placeholder */
+@keyframes placeholderBlink {
+  0%, 45% { opacity: 1; }
+  50%, 95% { opacity: 0.15; }
+  100% { opacity: 1; }
+}
+
+#input::placeholder {
+  animation: placeholderBlink 1.2s infinite;
+}
+
     /* mobile-only shadow softening */
 @media (max-width: 600px) {
   .phone {
@@ -488,7 +499,7 @@ padding-top: 0;
             <form id="form" class="input-bar">
               <div class="input-bubble">
                 <div class="imessage-dot"></div>
-                <input id="input" autocomplete="off" placeholder="iMessage" />
+                <input id="input" autocomplete="off" placeholder="chat with helena from hinge… type here" />
               </div>
               <button type="submit">Send</button>
             </form>
