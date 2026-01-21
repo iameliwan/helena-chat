@@ -7,16 +7,17 @@
   <style>
     * { box-sizing: border-box; }
 
+    /* Google Sites / iframe safety */
     html, body {
       height: 100%;
-      overflow: hidden;
+      width: 100%;
+      overflow: hidden; /* prevents iframe scrolling + odd cropping */
     }
 
     body {
       margin: 0;
       background: #f2f2f2;
-      min-height: 100vh;
-      min-height: 100dvh; /* IMPORTANT: dynamic viewport height */
+      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -38,10 +39,8 @@
       align-items: center;
       justify-content: center;
 
-      /* responsive auto-scale for embeds (Google Sites / mobile) */
-      transform: scale(var(--phone-scale, 1));
-      transform-origin: center;
-      will-change: transform;
+      /* scaled via JS for iframe/mobile */
+      transform-origin: center center;
     }
 
     /* SILVER EDGE / CHROME RIM */
@@ -439,21 +438,6 @@
       opacity: 0.4;
       cursor: default;
     }
-
-    @media (max-height: 760px) {
-      .phone { transform: scale(0.9); }
-    }
-
-    @media (max-height: 680px) {
-      .phone { transform: scale(0.8); }
-    }
-
-    @media (max-width: 600px) {
-      .phone {
-        margin-top: env(safe-area-inset-top);
-        margin-bottom: env(safe-area-inset-bottom);
-      }
-    }
   </style>
 </head>
 <body>
@@ -517,6 +501,40 @@
     const input = document.getElementById('input');
     const button = form.querySelector('button');
     const typing = document.getElementById('typing');
+
+    // Fit the phone inside Google Sites / iframes (especially on mobile)
+    function fitPhoneToViewport() {
+      const phone = document.querySelector('.phone');
+      if (!phone) return;
+
+      // Base phone size (matches .phone CSS)
+      const baseW = 380;
+      const baseH = 740;
+
+      // Available space in the iframe/viewport
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // Small padding so it doesn't touch iframe edges
+      const pad = 16;
+
+      // Scale down to fit both width + height, never scale above 1
+      const scale = Math.min(
+        (vw - pad) / baseW,
+        (vh - pad) / baseH,
+        1
+      );
+
+      phone.style.transform = `scale(${scale})`;
+      phone.style.transformOrigin = 'center center';
+    }
+
+    // Run now + on resize (mobile keyboard, iframe size changes)
+    fitPhoneToViewport();
+    window.addEventListener('resize', fitPhoneToViewport);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', fitPhoneToViewport);
+    }
 
     function linkify(text) {
       const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -585,32 +603,6 @@
         button.textContent = 'Send';
       }
     });
-
-    // --- Fit iPhone to embed/mobile viewport (Google Sites safe) ---
-    function fitPhoneToViewport() {
-      const PHONE_W = 380;
-      const PHONE_H = 740;
-      const PAD = 40;
-
-      const vv = window.visualViewport;
-      const viewportW = (vv ? vv.width : window.innerWidth);
-      const viewportH = (vv ? vv.height : window.innerHeight);
-
-      const vw = Math.max(0, viewportW - PAD);
-      const vh = Math.max(0, viewportH - PAD);
-
-      // cap slightly under 1 so embedded mobile doesn't feel oversized
-      const scale = Math.min(vw / PHONE_W, vh / PHONE_H, 0.92);
-
-      document.documentElement.style.setProperty("--phone-scale", scale);
-    }
-
-    window.addEventListener("resize", fitPhoneToViewport);
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", fitPhoneToViewport);
-      window.visualViewport.addEventListener("scroll", fitPhoneToViewport);
-    }
-    fitPhoneToViewport();
   </script>
 </body>
 </html>
