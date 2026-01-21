@@ -16,10 +16,11 @@
 
     body {
       margin: 0;
-      background: #f2f2f2;
+      background: #f9f9f9;
       height: 100%;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+padding-top: 16px;
       justify-content: center;
       font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     }
@@ -516,7 +517,7 @@
       const vh = window.innerHeight;
 
       // Small padding so it doesn't touch iframe edges
-      const pad = 16;
+      const pad = 8;
 
       // Scale down to fit both width + height, never scale above 1
       const scale = Math.min(
