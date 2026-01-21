@@ -19,8 +19,8 @@
       background: #f9f9f9;
       height: 100%;
       display: flex;
-      align-items: flex-start;
-padding-top: 16px;
+      align-items: center;
+padding-top: 0;
       justify-content: center;
       font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     }
@@ -439,6 +439,15 @@ padding-top: 16px;
       opacity: 0.4;
       cursor: default;
     }
+
+    /* mobile-only shadow softening */
+@media (max-width: 600px) {
+  .phone {
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(0, 0, 0, 0.6);
+  }
+}
   </style>
 </head>
 <body>
@@ -514,7 +523,8 @@ padding-top: 16px;
 
       // Available space in the iframe/viewport
       const vw = window.innerWidth;
-      const vh = window.innerHeight;
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
 
       // Small padding so it doesn't touch iframe edges
       const pad = 8;
