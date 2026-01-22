@@ -1,5 +1,19 @@
 import OpenAI from "openai";
 
+let helenaReplyCount = 0;
+
+// rotate forced links (and prevent back-to-back repeats)
+const FORCED_LINKS = [
+  ELI_SHOW_URL,
+  ELI_HELENA_ON_HINGE_URL,
+  ELI_PIXEL_DUST_URL,
+  ELI_CARPARK_VIDEO_URL,
+];
+
+let forcedLinkIndex = 0;
+let lastForcedLink = null;
+
+
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -86,8 +100,20 @@ function countLinksInText(text) {
 // Simple default: show link always.
 // If you want rotation later, we can rotate here safely.
 function getForcedLink() {
-  return ELI_SHOW_URL;
+  // choose the next link in sequence
+  let link = FORCED_LINKS[forcedLinkIndex % FORCED_LINKS.length];
+  forcedLinkIndex += 1;
+
+  // prevent repeating the same link twice in a row
+  if (link === lastForcedLink && FORCED_LINKS.length > 1) {
+    link = FORCED_LINKS[forcedLinkIndex % FORCED_LINKS.length];
+    forcedLinkIndex += 1;
+  }
+
+  lastForcedLink = link;
+  return link;
 }
+
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -102,7 +128,16 @@ export default async function handler(req, res) {
   const cleanedHistory = sanitizeHistory(history);
 
   // How many helena replies happened BEFORE this request?
-  const assistantTurns = cleanedHistory.filter((m) => m.role === "assistant").length;
+  helenaReplyCount += 1;
+
+const isThirdReply = helenaReplyCount % 3 === 0;
+const replyHasLink = countLinksInText(reply) > 0;
+
+if (isThirdReply && !replyHasLink) {
+  const forced = getForcedLink();
+  reply = `${reply}\n\n${forced}`.trim();
+}
+
 
   try {
     const messages = [
