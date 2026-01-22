@@ -1,8 +1,21 @@
 import OpenAI from "openai";
 
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+/* ===== Links ===== */
+const ELI_PIXEL_DUST_URL =
+  "https://open.spotify.com/track/3g26F5dbTkGlszlSkXqvaC?si=9560fa3b35af4202";
+const ELI_HELENA_ON_HINGE_URL = "http://awal.ffm.to/helena-on-hinge";
+const ELI_SHOW_URL =
+  "https://tickets.oztix.com.au/outlet/event/06a7cefb-2ae6-4c33-818d-cedbb047d962";
+const ELI_CARPARK_VIDEO_URL =
+  "https://youtube.com/shorts/BY2Hi-XR9qk?si=l-pQBHrpm1R6wQz3";
+
+/* ===== Server-side counters (persist while instance is warm) ===== */
 let helenaReplyCount = 0;
 
-// rotate forced links (and prevent back-to-back repeats)
 const FORCED_LINKS = [
   ELI_SHOW_URL,
   ELI_HELENA_ON_HINGE_URL,
@@ -12,21 +25,6 @@ const FORCED_LINKS = [
 
 let forcedLinkIndex = 0;
 let lastForcedLink = null;
-
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-/* ===== Links ===== */
-// (website removed by request)
-const ELI_PIXEL_DUST_URL =
-  "https://open.spotify.com/track/3g26F5dbTkGlszlSkXqvaC?si=9560fa3b35af4202";
-const ELI_HELENA_ON_HINGE_URL = "http://awal.ffm.to/helena-on-hinge";
-const ELI_SHOW_URL =
-  "https://tickets.oztix.com.au/outlet/event/06a7cefb-2ae6-4c33-818d-cedbb047d962";
-const ELI_CARPARK_VIDEO_URL =
-  "https://youtube.com/shorts/BY2Hi-XR9qk?si=l-pQBHrpm1R6wQz3";
 
 /* ===== Character Prompt ===== */
 const SYSTEM_PROMPT = `
@@ -86,7 +84,6 @@ function sanitizeHistory(history) {
     if ((role !== "user" && role !== "assistant") || typeof content !== "string") continue;
     cleaned.push({ role, content: content.slice(0, 2000) });
   }
-  // keep last ~24 messages
   return cleaned.slice(-24);
 }
 
@@ -96,15 +93,10 @@ function countLinksInText(text) {
   return matches ? matches.length : 0;
 }
 
-// Choose which link to force on the 3rd, 6th, 9th... reply.
-// Simple default: show link always.
-// If you want rotation later, we can rotate here safely.
 function getForcedLink() {
-  // choose the next link in sequence
   let link = FORCED_LINKS[forcedLinkIndex % FORCED_LINKS.length];
   forcedLinkIndex += 1;
 
-  // prevent repeating the same link twice in a row
   if (link === lastForcedLink && FORCED_LINKS.length > 1) {
     link = FORCED_LINKS[forcedLinkIndex % FORCED_LINKS.length];
     forcedLinkIndex += 1;
@@ -113,7 +105,6 @@ function getForcedLink() {
   lastForcedLink = link;
   return link;
 }
-
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -127,18 +118,6 @@ export default async function handler(req, res) {
 
   const cleanedHistory = sanitizeHistory(history);
 
-  // How many helena replies happened BEFORE this request?
-  helenaReplyCount += 1;
-
-const isThirdReply = helenaReplyCount % 3 === 0;
-const replyHasLink = countLinksInText(reply) > 0;
-
-if (isThirdReply && !replyHasLink) {
-  const forced = getForcedLink();
-  reply = `${reply}\n\n${forced}`.trim();
-}
-
-
   try {
     const messages = [
       { role: "system", content: SYSTEM_PROMPT },
@@ -149,22 +128,20 @@ if (isThirdReply && !replyHasLink) {
     const completion = await client.chat.completions.create({
       model: "gpt-4.1-mini",
       messages,
-      max_tokens: 120,       // shorter replies (more “human text”)
+      max_tokens: 120,
       temperature: 0.85,
     });
 
     let reply = completion.choices[0]?.message?.content?.trim() || "";
 
-    // HARD GUARANTEE:
-    // Every 3rd helena reply MUST include a link.
-    // (assistantTurns + 1) is the number of this new helena reply.
-    const isThirdReply = (assistantTurns + 1) % 3 === 0;
+    // increment ONLY after we successfully generated a reply
+    helenaReplyCount += 1;
+
+    const isThirdReply = helenaReplyCount % 3 === 0;
     const replyHasLink = countLinksInText(reply) > 0;
 
     if (isThirdReply && !replyHasLink) {
       const forced = getForcedLink();
-
-      // Append exactly one link, on a new line
       reply = `${reply}\n\n${forced}`.trim();
     }
 
