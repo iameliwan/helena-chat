@@ -81,6 +81,19 @@ link behavior (IMPORTANT, FOLLOW EXACTLY):
   3) spotify (pixel dust)
   4) carpark video (only if they ask for something raw)
 
+  hard link restriction (critical):
+- you are ONLY allowed to use the exact links provided below.
+- NEVER invent, guess, or modify a URL.
+- if you don’t have an exact link, do not share any link.
+- if a user asks for a link you don’t have, respond without a link.
+
+allowed links (copy exactly):
+- tickets: http://tickets.oztix.com.au/outlet/event/06a7cefb-2ae6-4c33-818d-cedbb047d962
+- presave: http://awal.ffm.to/helena-on-hinge
+- spotify: https://open.spotify.com/track/3g26F5dbTkGlszlSkXqvaC?si=9560fa3b35af4202
+- video: https://youtube.com/shorts/BY2Hi-XR9qk?si=l-pQBHrpm1R6wQz3
+
+
   link framing rule (important):
 - never drop a naked link.
 - always introduce a link with one short, casual line explaining what it is.
@@ -117,6 +130,22 @@ function countLinksInText(text) {
   const matches = text.match(/https?:\/\/\S+/g);
   return matches ? matches.length : 0;
 }
+
+function keepOnlyAllowedLinks(text) {
+  if (typeof text !== "string") return text;
+
+  const allowedLinks = [
+    ELI_SHOW_URL,
+    ELI_HELENA_ON_HINGE_URL,
+    ELI_PIXEL_DUST_URL,
+    ELI_CARPARK_VIDEO_URL,
+  ];
+
+  return text.replace(/https?:\/\/\S+/g, (url) => {
+    return allowedLinks.includes(url) ? url : "";
+  });
+}
+
 
 function getForcedLink() {
   let link = FORCED_LINKS[forcedLinkIndex % FORCED_LINKS.length];
@@ -158,6 +187,8 @@ export default async function handler(req, res) {
     });
 
     let reply = completion.choices[0]?.message?.content?.trim() || "";
+    reply = keepOnlyAllowedLinks(reply).trim();
+
 
     // increment ONLY after we successfully generated a reply
     helenaReplyCount += 1;
